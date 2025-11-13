@@ -24,7 +24,7 @@ const appSecret = process.env.APP_SECRET;
  * @param {string} secret - Facebook App Secret
  * @returns {boolean} - 验证是否通过
  */
-function verifyWebhookSignature(rawBody, signatureHash, secret) {
+function verifyWebhookSignature(rawBody, signature, secret) {
     if (!signature || !secret) {
         console.log('Missing signature or secret');
         return false;
@@ -73,14 +73,7 @@ app.post('/', (req, res) => {
     const signature = req.header('x-hub-signature-256');
     console.log('\n=== Request Header[X-Hub-Signature-256] ===');
     console.log(signature);
-
-    // 提取纯哈希值（去掉 sha256= 前缀）
-    const signatureHash = signature ? signature.replace('sha256=', '') : '';
-    console.log(`\n=== Signature Hash (without sha256=) ===`);
-    console.log(signatureHash);
-
-    // 验证签名
-    console.log(`\nverify request result: valid: ${verifyWebhookSignature(req.rawBody, signatureHash, appSecret)}`);
+    console.log(`verify request result: valid: ${verifyWebhookSignature(req.rawBody, signature, appSecret)}`);
 
     // 打印解析后的 JSON body（可选，用于参考）
     console.log('\n=== Parsed JSON Body ===');
